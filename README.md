@@ -1,35 +1,51 @@
-# Hush — private, programmable mail on Stellar
+# Sottara — private, programmable mail on Stellar
+
+![Stellar](https://img.shields.io/badge/Stellar-Soroban-7D00FF?logo=stellar&logoColor=white)
 
 > **Your inbox. Your rules. Proof for every delivery.**
 
-[![CI](https://github.com/Stellar-hush/hush/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Stellar-hush/hush/actions/workflows/ci.yml)
+[![CI](https://github.com/Stellar-sottara/sottara/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Stellar-sottara/sottara/actions/workflows/ci.yml)
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 | Review item       | Current status                                                                                                                                                                     |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | License           | MIT; see [`LICENSE`](LICENSE)                                                                                                                                                      |
 | Development       | Local application and testnet development paths; beta software                                                                                                                     |
-| Hosted experience | No verified public Hush demo URL yet; the screenshot-like panel below is an illustration                                                                                           |
-| CI / deployment   | Check the [latest CI run](https://github.com/Stellar-hush/hush/actions/workflows/ci.yml) and [deployment notes](docs/deployment/README.md); CI success and deployment are separate |
+| Hosted experience | No verified public Sottara demo URL yet; the screenshot-like panel below is an illustration                                                                                           |
+| CI / deployment   | Check the [latest CI run](https://github.com/Stellar-sottara/sottara/actions/workflows/ci.yml) and [deployment notes](docs/deployment/README.md); CI success and deployment are separate |
 | Contributions     | Public issues and pull requests are welcome; see [`CONTRIBUTING.md`](CONTRIBUTING.md)                                                                                              |
 
-Hush is an open-source beta for private email built around Stellar identity and programmable inbox access. Mailbox owners can decide how unfamiliar senders reach them: allow a verified identity, request approval, require postage, or block the sender. Encrypted message content stays off-chain; Stellar is used for identity and verifiable protocol actions.
+Sottara is an open-source beta for private email built around Stellar identity and programmable inbox access. Mailbox owners can decide how unfamiliar senders reach them: allow a verified identity, request approval, require postage, or block the sender. Encrypted message content stays off-chain; Stellar is used for identity and verifiable protocol actions.
 
 **Project status:** beta. The application, API, relay, protocol, and Soroban contracts are in this repository. Local development and testnet paths are available. Production readiness and a public hosted demo are separate deployment milestones; check the [deployment status](docs/deployment/README.md) before relying on any endpoint.
 
-![Hush product and visual identity overview](docs/assets/hush-brand-board.svg)
+![Sottara product and visual identity overview](docs/assets/sottara-brand-board.svg)
 
 _Product and design overview. The message flow is conceptual and does not claim that a hosted mail service is available._
 
-## Why Hush exists
+## Table of Contents
 
-Email makes it easy for anyone to contact an inbox, but the recipient has few tools to set admission rules before a message arrives. Hush explores a different model: senders present verifiable identity and meet the policy selected by the recipient. That can make abuse more costly, give recipients better control, and make delivery claims easier to inspect.
+- [Why Sottara exists](#why-sottara-exists)
+- [How a message flows](#how-a-message-flows)
+- [Product capabilities in this beta](#product-capabilities-in-this-beta)
+- [Try the project](#try-the-project)
+- [Documentation map](#documentation-map)
+- [Stellar and Soroban](#stellar-and-soroban)
+- [Environment variables](#environment-variables)
+- [Security](#security)
+- [Contributing](#contributing)
+- [Beta boundaries](#beta-boundaries)
+- [Prerequisites](#prerequisites)
 
-Hush is not a replacement for Stellar wallets and does not put private message bodies on-chain. The Stellar layer supports identity, policy, postage, receipts, and lifecycle evidence. Relays and encrypted object storage carry message payloads.
+## Why Sottara exists
+
+Email makes it easy for anyone to contact an inbox, but the recipient has few tools to set admission rules before a message arrives. Sottara explores a different model: senders present verifiable identity and meet the policy selected by the recipient. That can make abuse more costly, give recipients better control, and make delivery claims easier to inspect.
+
+Sottara is not a replacement for Stellar wallets and does not put private message bodies on-chain. The Stellar layer supports identity, policy, postage, receipts, and lifecycle evidence. Relays and encrypted object storage carry message payloads.
 
 ## How a message flows
 
-1. **Resolve the sender.** A Hush address or Stellar account is resolved to an identity and the keys needed by the client.
+1. **Resolve the sender.** A Sottara address or Stellar account is resolved to an identity and the keys needed by the client.
 2. **Evaluate the recipient’s rules.** The sender learns which admission requirements apply, such as trusted-sender access, verification, explicit approval, or postage.
 3. **Encrypt and submit.** The client prepares an encrypted envelope and sends it through the relay or configured storage path.
 4. **Record protocol evidence.** Where the configured chain adapter is enabled, postage and delivery state can be associated with Stellar contract records and receipts.
@@ -69,8 +85,8 @@ These are implementation areas, not a promise that every feature is available in
 **Requirements:** Node.js 24 or newer and Bun 1.3.14. Rust is needed to build or test the Soroban contracts; use the version pinned in [`rust-toolchain.toml`](rust-toolchain.toml).
 
 ```sh
-git clone https://github.com/Stellar-hush/hush.git
-cd hush
+git clone https://github.com/Stellar-sottara/sottara.git
+cd sottara
 bun install --frozen-lockfile
 cp .env.example .env
 bun run dev
@@ -104,9 +120,24 @@ Contract-focused work should also run the relevant commands in [`contracts/sorob
 
 ## Stellar and Soroban
 
-Hush uses Stellar as a programmable identity and protocol-evidence layer. Soroban contracts in this repository define policy, postage, receipts, and lifecycle behavior. The client and services include adapters that connect those contracts to message admission and delivery flows. Contract code, deployment manifests, and environment configuration have distinct roles; a local contract build is not proof that a contract is deployed or that a live application is using it.
+Sottara uses Stellar as a programmable identity and protocol-evidence layer. Soroban contracts in this repository define policy, postage, receipts, and lifecycle behavior. The client and services include adapters that connect those contracts to message admission and delivery flows. Contract code, deployment manifests, and environment configuration have distinct roles; a local contract build is not proof that a contract is deployed or that a live application is using it.
 
 The system is designed to keep message bodies and attachments out of public ledger state. Ledger transactions and contract events can still reveal operational metadata such as account relationships, payment amounts, timing, and public contract activity. Review the [metadata policy](docs/security/metadata-policy.md) before handling sensitive data.
+
+## Environment variables
+
+Copy `.env.example` to `.env` and fill in your values (see the file for inline docs). Key groups:
+
+| Variable group | Key variables |
+| --- | --- |
+| Storage (KV) | `SOTTARA_KV_LOCAL_ID`, `SOTTARA_KV_PREVIEW_ID`, `SOTTARA_KV_PRODUCTION_ID` |
+
+## Security
+
+- **Never commit secrets** — keep keys, seed phrases, and `.env` files out of source control.
+- **Testnet values have no real-world value**; treat testnet deployments as experimental.
+- **Keys never leave the wallet** — signing is delegated to the user's Stellar wallet; the app does not store secret keys.
+- Report vulnerabilities per `SECURITY.md` where present rather than opening a public issue.
 
 ## Contributing
 
@@ -114,15 +145,23 @@ Good contribution areas include protocol interoperability vectors, contract fail
 
 Start with [`CONTRIBUTING.md`](CONTRIBUTING.md), then read the relevant module guide. The project uses a review-first workflow: discuss large changes in an issue, keep changes focused, include exact validation results, and never add secrets or real message content to the repository.
 
-Hush has an MIT license; see [`LICENSE`](LICENSE). Participation in the Stellar Wave is subject to organizer approval and the program’s current rules. The [maintainer guide](https://docs.drips.network/wave/maintainers/participating-in-a-wave/) explains how to apply a public repository, add issues after approval, and manage contributor assignments.
+Sottara has an MIT license; see [`LICENSE`](LICENSE). Participation in the Stellar Wave is subject to organizer approval and the program’s current rules. The [maintainer guide](https://docs.drips.network/wave/maintainers/participating-in-a-wave/) explains how to apply a public repository, add issues after approval, and manage contributor assignments.
 
 ## Beta boundaries
 
-- Hush is experimental software. Do not use it as the sole channel for sensitive, urgent, or legally required communication.
+- Sottara is experimental software. Do not use it as the sole channel for sensitive, urgent, or legally required communication.
 - A testnet deployment does not provide production availability, email deliverability, or financial guarantees.
 - Existing federation domains, API headers, signature domains, deployment resources, and storage keys still use legacy identifiers. They remain for compatibility until their migrations are coordinated; see the [migration guide](docs/product/brand-migration.md).
 - A public landing page or hosted preview is not equivalent to a production mail service. Check the [deployment status](docs/deployment/README.md) for the current verified endpoint and its limitations.
 
 ## License
 
-Hush is distributed under the [MIT License](LICENSE).
+Sottara is distributed under the [MIT License](LICENSE).
+
+## Prerequisites
+
+| Tool | Notes |
+| --- | --- |
+| **Node.js** | 24+ and Bun 1.3 |
+| **Cloudflare Wrangler** | Workers / KV |
+| **Rust** | for the contracts |
